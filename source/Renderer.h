@@ -5,6 +5,11 @@ struct SDL_Surface;
 
 namespace dae
 {
+	class SoftwareRenderer;
+	class Camera;
+	class Mesh;
+	class Texture;
+
 	class Renderer final
 	{
 	public:
@@ -25,10 +30,10 @@ namespace dae
 		int m_Width{};
 		int m_Height{};
 
-		bool m_IsInitialized{ false };
+		Camera* m_pCamera{};
+		std::vector<Mesh*> m_pMeshes{};
+		std::vector<Texture*> m_pTextures{};
 
-		//DIRECTX
-		HRESULT InitializeDirectX();
-		//...
+		SoftwareRenderer* m_pSoftwareRender{};
 	};
 }

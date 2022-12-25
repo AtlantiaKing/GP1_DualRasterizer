@@ -123,7 +123,7 @@ namespace dae {
 		data[0] = Vector4{ r0.x, r1.x, r2.x, 0.f };
 		data[1] = Vector4{ r0.y, r1.y, r2.y, 0.f };
 		data[2] = Vector4{ r0.z, r1.z, r2.z, 0.f };
-		data[3] = {-Vector3::Dot(b, t),Vector3::Dot(a, t),-Vector3::Dot(d, s),Vector3::Dot(c, s) };
+		data[3] = { -Vector3::Dot(b, t),Vector3::Dot(a, t),-Vector3::Dot(d, s),Vector3::Dot(c, s) };
 
 		return *this;
 	}
@@ -152,8 +152,15 @@ namespace dae {
 
 	Matrix Matrix::CreatePerspectiveFovLH(float fov, float aspect, float zn, float zf)
 	{
-		assert(false && "Not Implemented");
-		return {};
+		const float frustumSize{ zf - zn };
+
+		return
+		{
+			{ 1.0f / (aspect * fov), 0.0f, 0.0f, 0.0f },
+			{ 0.0f, 1.0f / fov, 0.0f, 0.0f },
+			{ 0.0f, 0.0f, zf / frustumSize, 1.0f },
+			{ 0.0f, 0.0f, -(zf * zn) / frustumSize, 0.0f }
+		};
 	}
 
 	Vector3 Matrix::GetAxisX() const
