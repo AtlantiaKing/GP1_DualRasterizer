@@ -14,6 +14,9 @@
     <Filter Include="DataTypes">
       <UniqueIdentifier>{ef08759f-e5f3-4fe6-b3d7-f07a4fdebba9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="DataTypes\Materials">
+      <UniqueIdentifier>{3576705d-4b72-42f6-9138-f7cd29c0e9bd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Vector3.h">
@@ -65,6 +68,15 @@
     <ClInclude Include="Camera.h">
       <Filter>Misc</Filter>
     </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>DataTypes\Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="MaterialShaded.h">
+      <Filter>DataTypes\Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="MaterialTransparent.h">
+      <Filter>DataTypes\Materials</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -101,6 +113,15 @@
     </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>DataTypes\Materials</Filter>
+    </ClCompile>
+    <ClCompile Include="MaterialShaded.cpp">
+      <Filter>DataTypes\Materials</Filter>
+    </ClCompile>
+    <ClCompile Include="MaterialTransparent.cpp">
+      <Filter>DataTypes\Materials</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

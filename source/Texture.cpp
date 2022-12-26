@@ -6,26 +6,57 @@
 
 namespace dae
 {
-	Texture::Texture(SDL_Surface* pSurface) :
-		m_pSurface{ pSurface },
-		m_pSurfacePixels{ static_cast<uint32_t*>(pSurface->pixels) }
+	Texture::Texture(ID3D11Device* pDevice, SDL_Surface* pSurface, TextureType type)
+		: m_pSurface{ pSurface }
+		, m_pSurfacePixels{ static_cast<uint32_t*>(pSurface->pixels) }
+		, m_Type{ type }
 	{
+		// Create the texture description
+		const DXGI_FORMAT format{ DXGI_FORMAT_R8G8B8A8_UNORM };
+		D3D11_TEXTURE2D_DESC desc{};
+		desc.Width = pSurface->w;
+		desc.Height = pSurface->h;
+		desc.MipLevels = 1;
+		desc.ArraySize = 1;
+		desc.Format = format;
+		desc.SampleDesc.Count = 1;
+		desc.SampleDesc.Quality = 0;
+		desc.Usage = D3D11_USAGE_DEFAULT;
+		desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+		desc.CPUAccessFlags = 0;
+		desc.MiscFlags = 0;
+
+		// Create intialize data for subresource
+		D3D11_SUBRESOURCE_DATA initData{};
+		initData.pSysMem = pSurface->pixels;
+		initData.SysMemPitch = static_cast<UINT>(pSurface->pitch);
+		initData.SysMemSlicePitch = static_cast<UINT>(pSurface->h * pSurface->pitch);
+
+		// Create the texture resource
+		HRESULT hr = pDevice->CreateTexture2D(&desc, &initData, &m_pResource);
+		if (FAILED(hr)) return;
+
+		// Create the shader resource view description
+		D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc{};
+		SRVDesc.Format = format;
+		SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+		SRVDesc.Texture2D.MipLevels = 1;
+
+		// Create the shader resource view
+		hr = pDevice->CreateShaderResourceView(m_pResource, &SRVDesc, &m_pSRV);
+		if (FAILED(hr)) return;
 	}
 
 	Texture::~Texture()
 	{
-		if (m_pSurface)
-		{
-			SDL_FreeSurface(m_pSurface);
-			m_pSurface = nullptr;
-		}
+		if (m_pSurface) SDL_FreeSurface(m_pSurface);
 	}
 
-	Texture* Texture::LoadFromFile(const std::string& path)
+	Texture* Texture::LoadFromFile(ID3D11Device* pDevice, const std::string& path, TextureType type)
 	{
 		//Load SDL_Surface using IMG_LOAD
 		//Create & Return a new Texture Object (using SDL_Surface)
-		return new Texture{ IMG_Load(path.c_str()) };
+		return new Texture{ pDevice, IMG_Load(path.c_str()), type };
 	}
 
 	ColorRGB Texture::Sample(const Vector2& uv) const
@@ -50,5 +81,20 @@ namespace dae
 
 		// Return the color in range [0, 1]
 		return ColorRGB{ r / maxColorValue, g / maxColorValue, b / maxColorValue };
+	}
+
+	ID3D11Texture2D* Texture::GetResource() const
+	{
+		return m_pResource;
+	}
+
+	ID3D11ShaderResourceView* Texture::GetSRV() const
+	{
+		return m_pSRV;
+	}
+
+	Texture::TextureType Texture::GetType() const
+	{
+		return m_Type;
 	}
 }

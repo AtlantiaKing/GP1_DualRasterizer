@@ -21,7 +21,7 @@ namespace dae
 			Depth
 		};
 
-		SoftwareRenderer(SDL_Window* pWindow, Texture* pDiffuseTexture, Texture* pNormalTexture, Texture* pSpecularTexture, Texture* pGlossinessTexture);
+		SoftwareRenderer(SDL_Window* pWindow);
 		~SoftwareRenderer();
 
 		SoftwareRenderer(const SoftwareRenderer&) = delete;
@@ -33,6 +33,7 @@ namespace dae
 		void ToggleRenderState(RendererState toggleState);
 		void ToggleLightingMode();
 		void ToggleNormalMap();
+		void SetTextures(Texture* pDiffuseTexture, Texture* pNormalTexture, Texture* pSpecularTexture, Texture* pGlossinessTexture);
 		void SetMesh(Mesh* pMesh);
 
 		bool SaveBufferToImage() const;

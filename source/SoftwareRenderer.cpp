@@ -7,12 +7,8 @@
 
 namespace dae
 {
-	dae::SoftwareRenderer::SoftwareRenderer(SDL_Window* pWindow, Texture* pDiffuseTexture, Texture* pNormalTexture, Texture* pSpecularTexture, Texture* pGlossinessTexture)
+	dae::SoftwareRenderer::SoftwareRenderer(SDL_Window* pWindow)
 		: m_pWindow{ pWindow }
-		, m_pDiffuseTexture{ pDiffuseTexture }
-		, m_pNormalTexture{ pNormalTexture }
-		, m_pSpecularTexture{ pSpecularTexture }
-		, m_pGlossinessTexture{ pGlossinessTexture }
 	{
 		//Initialize
 		SDL_GetWindowSize(pWindow, &m_Width, &m_Height);
@@ -47,8 +43,6 @@ namespace dae
 
 			// Convert all the vertices in the mesh from world space to NDC space
 			VertexTransformationFunction(verticesOut, pCamera);
-
-			//m_Mesh.useIndices = m_Mesh.indices;
 
 			// Create a vector for all the vertices in raster space
 			std::vector<Vector2> verticesRasterSpace{};
@@ -397,6 +391,14 @@ namespace dae
 		m_IsNormalMapActive = !m_IsNormalMapActive;
 	}
 
+	void SoftwareRenderer::SetTextures(Texture* pDiffuseTexture, Texture* pNormalTexture, Texture* pSpecularTexture, Texture* pGlossinessTexture)
+	{
+		m_pDiffuseTexture = pDiffuseTexture;
+		m_pNormalTexture = pNormalTexture;
+		m_pSpecularTexture = pSpecularTexture;
+		m_pGlossinessTexture = pGlossinessTexture;
+	}
+
 	void SoftwareRenderer::SetMesh(Mesh* pMesh)
 	{
 		// Set the current mesh that should be displayed
@@ -424,7 +426,7 @@ namespace dae
 		for (const Vertex& v : vertices)
 		{
 			// Create a new vertex	
-			Vertex_Out vOut{ {}, v.color, v.uv, v.normal, v.tangent };
+			Vertex_Out vOut{ {}, v.normal, v.tangent, v.uv, v.color };
 
 			// Tranform the vertex using the inversed view matrix
 			vOut.position = worldViewProjectionMatrix.TransformPoint({ v.position, 1.0f });
@@ -623,7 +625,8 @@ namespace dae
 	void SoftwareRenderer::ClearBackground() const
 	{
 		// Fill the background with black (0,0,0)
-		SDL_FillRect(m_pBackBuffer, NULL, SDL_MapRGB(m_pBackBuffer->format, 100, 100, 100));
+		int colorValue{ static_cast<int>(0.39f * 255) };
+		SDL_FillRect(m_pBackBuffer, NULL, SDL_MapRGB(m_pBackBuffer->format, colorValue, colorValue, colorValue));
 	}
 
 	void SoftwareRenderer::ResetDepthBuffer() const
@@ -667,6 +670,7 @@ namespace dae
 
 		// The final color that will be rendered
 		ColorRGB finalColor{};
+		ColorRGB ambientColor{ 0.025f, 0.025f, 0.025f };
 
 		// Depending on the rendering state, do other things
 		switch (m_RendererState)
@@ -689,7 +693,7 @@ namespace dae
 				const ColorRGB specular{ m_pSpecularTexture->Sample(pixelInfo.uv) * LightingUtils::Phong(1.0f, specularExp, -lightDirection, pixelInfo.viewDirection, useNormal) };
 
 				// Lambert + Phong + ObservedArea
-				finalColor += (lightIntensity * lambert + specular) * observedArea;
+				finalColor += (lightIntensity * lambert + specular) * observedArea + ambientColor;
 				break;
 			}
 			case LightingMode::ObservedArea:

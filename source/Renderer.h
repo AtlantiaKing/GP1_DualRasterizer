@@ -5,6 +5,7 @@ struct SDL_Surface;
 
 namespace dae
 {
+	class HardwareRenderer;
 	class SoftwareRenderer;
 	class Camera;
 	class Mesh;
@@ -23,8 +24,15 @@ namespace dae
 
 		void Update(const Timer* pTimer);
 		void Render() const;
+		void ToggleRenderMode();
 
 	private:
+		enum class RenderMode
+		{
+			Software,
+			Hardware
+		};
+
 		SDL_Window* m_pWindow{};
 
 		int m_Width{};
@@ -33,7 +41,11 @@ namespace dae
 		Camera* m_pCamera{};
 		std::vector<Mesh*> m_pMeshes{};
 		std::vector<Texture*> m_pTextures{};
+		RenderMode m_RenderMode{ RenderMode::Hardware };
 
+		HardwareRenderer* m_pHardwareRender{};
 		SoftwareRenderer* m_pSoftwareRender{};
+
+		void LoadMeshes();
 	};
 }

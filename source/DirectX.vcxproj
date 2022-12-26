@@ -82,6 +82,9 @@
     <ClInclude Include="ColorRGB.h" />
     <ClInclude Include="DataTypes.h" />
     <ClInclude Include="HardwareRenderer.h" />
+    <ClInclude Include="Material.h" />
+    <ClInclude Include="MaterialShaded.h" />
+    <ClInclude Include="MaterialTransparent.h" />
     <ClInclude Include="MathHelpers.h" />
     <ClInclude Include="Matrix.h" />
     <ClInclude Include="Mesh.h" />
@@ -99,6 +102,9 @@
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="HardwareRenderer.cpp" />
+    <ClCompile Include="Material.cpp" />
+    <ClCompile Include="MaterialShaded.cpp" />
+    <ClCompile Include="MaterialTransparent.cpp" />
     <ClCompile Include="Matrix.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">pch.h</PrecompiledHeaderFile>
