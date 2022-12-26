@@ -50,6 +50,9 @@ namespace dae
 	Texture::~Texture()
 	{
 		if (m_pSurface) SDL_FreeSurface(m_pSurface);
+
+		if (m_pResource) m_pResource->Release();
+		if (m_pSRV) m_pSRV->Release();
 	}
 
 	Texture* Texture::LoadFromFile(ID3D11Device* pDevice, const std::string& path, TextureType type)
