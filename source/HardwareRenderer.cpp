@@ -15,7 +15,6 @@ namespace dae {
 		if (result == S_OK)
 		{
 			m_IsInitialized = true;
-			std::cout << "DirectX is initialized and ready!\n";
 		}
 		else
 		{
@@ -58,13 +57,13 @@ namespace dae {
 		return m_pSampleState;
 	}
 
-	void HardwareRenderer::Render(const std::vector<Mesh*>& pMeshes) const
+	void HardwareRenderer::Render(const std::vector<Mesh*>& pMeshes, bool useUniformBackground) const
 	{
 		if (!m_IsInitialized)
 			return;
 
 		// Clear RTV and DSV
-		ColorRGB clearColor{ 0.39f, 0.59f, 0.93f };
+		ColorRGB clearColor{ useUniformBackground ? ColorRGB{ 0.1f, 0.1f, 0.1f } : ColorRGB{ 0.39f, 0.59f, 0.93f } };
 		m_pDeviceContext->ClearRenderTargetView(m_pRenderTargetView, &clearColor.r);
 		m_pDeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
@@ -85,19 +84,20 @@ namespace dae {
 
 		// Get the right D3D11 Filter
 		D3D11_FILTER newFilter{};
-		std::cout << "Changed sample state to: ";
+		std::cout << "\033[32m"; // TEXT COLOR
+		std::cout << "**(HARDWARE) Sampler Filter = ";
 		switch (m_SampleState)
 		{
 		case SampleState::Point:
-			std::cout << "Point\n";
+			std::cout << "POINT\n";
 			newFilter = D3D11_FILTER_MIN_MAG_MIP_POINT;
 			break;
 		case  SampleState::Linear:
-			std::cout << "Linear\n";
+			std::cout << "LINEAR\n";
 			newFilter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 			break;
 		case  SampleState::Anisotropic:
-			std::cout << "Anisotropic\n";
+			std::cout << "ANISOTROPIC\n";
 			newFilter = D3D11_FILTER_ANISOTROPIC;
 			break;
 		}

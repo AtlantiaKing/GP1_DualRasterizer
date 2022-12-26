@@ -26,13 +26,13 @@ namespace dae
 		delete[] m_pDepthBufferPixels;
 	}
 
-	void dae::SoftwareRenderer::Render(Camera* pCamera)
+	void dae::SoftwareRenderer::Render(Camera* pCamera, bool useUniformBackground)
 	{
 		// Reset the depth buffer
 		ResetDepthBuffer();
 
 		// Paint the canvas black
-		ClearBackground();
+		ClearBackground(useUniformBackground);
 
 		//Lock BackBuffer
 		SDL_LockSurface(m_pBackBuffer);
@@ -372,23 +372,77 @@ namespace dae
 		SDL_UpdateWindowSurface(m_pWindow);
 	}
 
-	void dae::SoftwareRenderer::ToggleRenderState(RendererState toggleState)
+	void SoftwareRenderer::ToggleShowingDepthBuffer()
 	{
-		// If the toggleState is equal to the current state, switch back to the default state
-		// Else, set the current state to the toggleState
-		m_RendererState = m_RendererState == toggleState ? RendererState::Default : toggleState;
+		m_IsShowingDepthBuffer = !m_IsShowingDepthBuffer;
+
+		std::cout << "\033[35m"; // TEXT COLOR
+		std::cout << "**(SOFTWARE) DepthBuffer Visualization ";
+		if (m_IsShowingDepthBuffer)
+		{
+			std::cout << "ON\n";
+		}
+		else
+		{
+			std::cout << "OFF\n";
+		}
+	}
+
+	void SoftwareRenderer::ToggleShowingBoundingBoxes()
+	{
+		m_IsShowingBoundingBoxes = !m_IsShowingBoundingBoxes;
+
+		std::cout << "\033[35m"; // TEXT COLOR
+		std::cout << "**(SOFTWARE) BoundingBox Visualization ";
+		if (m_IsShowingBoundingBoxes)
+		{
+			std::cout << "ON\n";
+		}
+		else
+		{
+			std::cout << "OFF\n";
+		}
 	}
 
 	void dae::SoftwareRenderer::ToggleLightingMode()
 	{
 		// Shuffle through all the lighting modes
 		m_LightingMode = static_cast<LightingMode>((static_cast<int>(m_LightingMode) + 1) % (static_cast<int>(LightingMode::Specular) + 1));
+
+		std::cout << "\033[35m"; // TEXT COLOR
+		std::cout << "**(SOFTWARE) Shading Mode = ";
+		switch (m_LightingMode)
+		{
+		case dae::SoftwareRenderer::LightingMode::Combined:
+			std::cout << "COMBINED\n";
+			break;
+		case dae::SoftwareRenderer::LightingMode::ObservedArea:
+			std::cout << "OBSERVED_AREA\n";
+			break;
+		case dae::SoftwareRenderer::LightingMode::Diffuse:
+			std::cout << "DIFFUSE\n";
+			break;
+		case dae::SoftwareRenderer::LightingMode::Specular:
+			std::cout << "SPECULAR\n";
+			break;
+		}
 	}
 
 	void dae::SoftwareRenderer::ToggleNormalMap()
 	{
 		// Toggle the normal map active variable
 		m_IsNormalMapActive = !m_IsNormalMapActive;
+
+		std::cout << "\033[35m"; // TEXT COLOR
+		std::cout << "**(SOFTWARE) NormalMap ";
+		if (m_IsNormalMapActive)
+		{
+			std::cout << "ON\n";
+		}
+		else
+		{
+			std::cout << "OFF\n";
+		}
 	}
 
 	void SoftwareRenderer::SetTextures(Texture* pDiffuseTexture, Texture* pNormalTexture, Texture* pSpecularTexture, Texture* pGlossinessTexture)
@@ -504,7 +558,7 @@ namespace dae
 				const Vector2 curPixel{ static_cast<float>(px), static_cast<float>(py) };
 
 				// If only the bounding box should be rendered, do no triangle checks, just display a white color
-				if (m_RendererState == RendererState::BoundingBox)
+				if (m_IsShowingBoundingBoxes)
 				{
 					m_pBackBufferPixels[pixelIdx] = SDL_MapRGB(m_pBackBuffer->format,
 						static_cast<uint8_t>(255),
@@ -554,9 +608,15 @@ namespace dae
 				Vertex_Out pixelInfo{};
 
 				// Switch between all the render states
-				switch (m_RendererState)
+				if (m_IsShowingDepthBuffer)
 				{
-				case RendererState::Default:
+					// Remap the Z depth
+					const float depthColor{ Remap(interpolatedZDepth, 0.997f, 1.0f) };
+
+					// Set the color of the current pixel to showcase the depth
+					pixelInfo.color = { depthColor, depthColor, depthColor };
+				}
+				else
 				{
 					// Calculate the W depth at this pixel
 					const float interpolatedWDepth
@@ -603,17 +663,6 @@ namespace dae
 								* interpolatedWDepth
 					}.Normalized();
 
-					break;
-				}
-				case RendererState::Depth:
-				{
-					// Remap the Z depth
-					const float depthColor{ Remap(interpolatedZDepth, 0.997f, 1.0f) };
-
-					// Set the color of the current pixel to showcase the depth
-					pixelInfo.color = { depthColor, depthColor, depthColor };
-					break;
-				}
 				}
 
 				// Calculate the shading at this pixel and display it on screen
@@ -622,10 +671,10 @@ namespace dae
 		}
 	}
 
-	void SoftwareRenderer::ClearBackground() const
+	void SoftwareRenderer::ClearBackground(bool useUniformBackground) const
 	{
-		// Fill the background with black (0,0,0)
-		int colorValue{ static_cast<int>(0.39f * 255) };
+		// Fill the background
+		int colorValue{ static_cast<int>((useUniformBackground ? 0.1f : 0.39f) * 255) };
 		SDL_FillRect(m_pBackBuffer, NULL, SDL_MapRGB(m_pBackBuffer->format, colorValue, colorValue, colorValue));
 	}
 
@@ -673,9 +722,13 @@ namespace dae
 		ColorRGB ambientColor{ 0.025f, 0.025f, 0.025f };
 
 		// Depending on the rendering state, do other things
-		switch (m_RendererState)
+		if (m_IsShowingDepthBuffer)
 		{
-		case RendererState::Default:
+
+			// Only render the depth which is saved in the color attribute of the pixel info
+			finalColor += pixelInfo.color;
+		}
+		else
 		{
 			// Calculate the observed area in this pixel
 			const float observedArea{ Vector3::DotClamped(useNormal.Normalized(), -lightDirection.Normalized()) };
@@ -723,15 +776,6 @@ namespace dae
 			// Create the ambient color	and add it to the final color
 			const ColorRGB ambientColor{ 0.025f, 0.025f, 0.025f };
 			finalColor += ambientColor;
-
-			break;
-		}
-		case RendererState::Depth:
-		{
-			// Only render the depth which is saved in the color attribute of the pixel info
-			finalColor += pixelInfo.color;
-			break;
-		}
 		}
 
 		//Update Color in Buffer

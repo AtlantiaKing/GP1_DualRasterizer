@@ -22,7 +22,7 @@ namespace dae
 		ID3D11Device* GetDevice() const;
 		ID3D11SamplerState* GetSampleState() const;
 
-		void Render(const std::vector<Mesh*>& pMeshes) const;
+		void Render(const std::vector<Mesh*>& pMeshes, bool useUniformBackground) const;
 
 	private:
 		enum class SampleState

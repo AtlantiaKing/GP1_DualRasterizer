@@ -14,12 +14,6 @@ namespace dae
 	class SoftwareRenderer
 	{
 	public:
-		enum class RendererState
-		{
-			Default,
-			BoundingBox,
-			Depth
-		};
 
 		SoftwareRenderer(SDL_Window* pWindow);
 		~SoftwareRenderer();
@@ -29,8 +23,9 @@ namespace dae
 		SoftwareRenderer& operator=(const SoftwareRenderer&) = delete;
 		SoftwareRenderer& operator=(SoftwareRenderer&&) noexcept = delete;
 
-		void Render(Camera* pCamera);
-		void ToggleRenderState(RendererState toggleState);
+		void Render(Camera* pCamera, bool useUniformBackground);
+		void ToggleShowingDepthBuffer();
+		void ToggleShowingBoundingBoxes();
 		void ToggleLightingMode();
 		void ToggleNormalMap();
 		void SetTextures(Texture* pDiffuseTexture, Texture* pNormalTexture, Texture* pSpecularTexture, Texture* pGlossinessTexture);
@@ -64,7 +59,8 @@ namespace dae
 		Texture* m_pSpecularTexture{};
 		Texture* m_pGlossinessTexture{};
 
-		RendererState m_RendererState{ RendererState::Default };
+		bool m_IsShowingDepthBuffer{};
+		bool m_IsShowingBoundingBoxes{};
 		LightingMode m_LightingMode{ LightingMode::Combined };
 		bool m_IsRotatingMesh{ true };
 		bool m_IsNormalMapActive{ true };
@@ -72,7 +68,7 @@ namespace dae
 		//Function that transforms the vertices from the mesh from World space to Screen space
 		void VertexTransformationFunction(std::vector<Vertex_Out>& verticesOut, Camera* pCamera);
 		void RenderTriangle(const std::vector<Vector2>& rasterVertices, const std::vector<Vertex_Out>& verticesOut, const std::vector<uint32_t>& indices, int vertexIdx, bool swapVertices) const;
-		void ClearBackground() const;
+		void ClearBackground(bool useUniformBackground) const;
 		void ResetDepthBuffer() const;
 		void PixelShading(int pixelIdx, const Vertex_Out& pixelInfo) const;
 		inline Vector2 CalculateNDCToRaster(const Vector3& ndcVertex) const;

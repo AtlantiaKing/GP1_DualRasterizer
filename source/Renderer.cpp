@@ -28,6 +28,28 @@ namespace dae {
 		
 		// Load all the textures and meshes
 		LoadMeshes();
+
+		// Show keybinds
+		std::cout << "\033[33m"; // TEXT COLOR
+		std::cout << "[Key Bindings - SHARED]\n";
+		std::cout << "\t[F1]  Toggle Rasterizer Mode (HARDWARE / SOFTWARE)\n";
+		std::cout << "\t[F2]  Toggle Vehicle Rotation (ON / OFF)\n";
+		std::cout << "\t[F9]  Cycle CullMode (BACK / FRONT / NONE)\n";
+		std::cout << "\t[F10] Toggle Uniform ClearColor (ON / OFF)\n";
+		std::cout << "\t[F11] Toggle Print FPS (ON / OFF)\n";
+		std::cout << "\n";
+		std::cout << "\033[32m"; // TEXT COLOR
+		std::cout << "[Key Bindings - HARDWARE]\n";
+		std::cout << "\t[F3] Toggle FireFX (ON / OFF)\n";
+		std::cout << "\t[F4] Cycle Sampler State (POINT / LINEAR / ANISOTROPIC)\n";
+		std::cout << "\n";
+		std::cout << "\033[35m"; // TEXT COLOR
+		std::cout << "[Key Bindings - SOFTWARE]\n";
+		std::cout << "\t[F5] Cycle Shading Mode (COMBINED / OBSERVED_AREA / DIFFUSE / SPECULAR)\n";
+		std::cout << "\t[F6] Toggle NormalMap (ON / OFF)\n";
+		std::cout << "\t[F7] Toggle DepthBuffer Visualization (ON / OFF)\n";
+		std::cout << "\t[F8] Toggle BoundingBox Visualization (ON / OFF)\n";
+		std::cout << "\n\n";
 	}
 
 	Renderer::~Renderer()
@@ -60,7 +82,7 @@ namespace dae {
 		const float rotationSpeed{ 45.0f * TO_RADIANS };
 		for (Mesh* pMesh : m_pMeshes)
 		{
-			pMesh->RotateY(rotationSpeed * pTimer->GetElapsed());
+			if(m_IsMeshRotating) pMesh->RotateY(rotationSpeed * pTimer->GetElapsed());
 			pMesh->SetMatrices(ViewProjMatrix, m_pCamera->GetInverseViewMatrix());
 		}
 	}
@@ -72,11 +94,11 @@ namespace dae {
 		{
 		case dae::Renderer::RenderMode::Software:
 			// Render the scene using the software rasterizer
-			m_pSoftwareRender->Render(m_pCamera);
+			m_pSoftwareRender->Render(m_pCamera, m_IsBackgroundUniform);
 			break;
 		case dae::Renderer::RenderMode::Hardware:
 			// Render the scene using the software rasterizer
-			m_pHardwareRender->Render(m_pMeshes);
+			m_pHardwareRender->Render(m_pMeshes, m_IsBackgroundUniform);
 			break;
 		}
 	}
@@ -85,6 +107,104 @@ namespace dae {
 	{
 		// Go to the next render mode
 		m_RenderMode = static_cast<RenderMode>((static_cast<int>(m_RenderMode) + 1) % (static_cast<int>(RenderMode::Hardware) + 1));
+
+		std::cout << "\033[33m"; // TEXT COLOR
+		std::cout << "**(SHARED) Rasterizer Mode = ";
+		switch (m_RenderMode)
+		{
+		case dae::Renderer::RenderMode::Software:
+			std::cout << "SOFTWARE\n";
+			break;
+		case dae::Renderer::RenderMode::Hardware:
+			std::cout << "HARDWARE\n";
+			break;
+		}
+	}
+
+	void Renderer::ToggleMeshRotation()
+	{
+		m_IsMeshRotating = !m_IsMeshRotating;
+
+		std::cout << "\033[33m"; // TEXT COLOR
+		std::cout << "**(SHARED) Vehicle Rotation ";
+		if (m_IsMeshRotating)
+		{
+			std::cout << "ON\n";
+		}
+		else
+		{
+			std::cout << "OFF\n";
+		}
+	}
+
+	void Renderer::ToggleFireMesh()
+	{
+		if (m_RenderMode != RenderMode::Hardware) return;
+
+		Mesh* pFireMesh{ m_pMeshes[1] };
+		pFireMesh->SetVisibility(!pFireMesh->IsVisible());
+
+		std::cout << "\033[32m"; // TEXT COLOR
+		std::cout << "**(HARDWARE)FireFX ";
+		if (pFireMesh->IsVisible())
+		{
+			std::cout << "ON\n";
+		}
+		else
+		{
+			std::cout << "OFF\n";
+		}
+	}
+
+	void Renderer::ToggleSamplerState()
+	{
+		if (m_RenderMode != RenderMode::Hardware) return;
+
+		m_pHardwareRender->ToggleRenderSampleState(m_pMeshes);
+	}
+
+	void Renderer::ToggleShadingMode()
+	{
+		if (m_RenderMode != RenderMode::Software) return;
+
+		m_pSoftwareRender->ToggleLightingMode();
+	}
+
+	void Renderer::ToggleNormalMap()
+	{
+		if (m_RenderMode != RenderMode::Software) return;
+
+		m_pSoftwareRender->ToggleNormalMap();
+	}
+
+	void Renderer::ToggleShowingDepthBuffer()
+	{
+		if (m_RenderMode != RenderMode::Software) return;
+
+		m_pSoftwareRender->ToggleShowingDepthBuffer();
+	}
+
+	void Renderer::ToggleShowingBoundingBoxes()
+	{
+		if (m_RenderMode != RenderMode::Software) return;
+
+		m_pSoftwareRender->ToggleShowingBoundingBoxes();
+	}
+
+	void Renderer::ToggleUniformBackground()
+	{
+		m_IsBackgroundUniform = !m_IsBackgroundUniform;
+
+		std::cout << "\033[33m"; // TEXT COLOR
+		std::cout << "**(SHARED) Uniform ClearColor ";
+		if (m_IsBackgroundUniform)
+		{
+			std::cout << "ON\n";
+		}
+		else
+		{
+			std::cout << "OFF\n";
+		}
 	}
 
 	void Renderer::LoadMeshes()

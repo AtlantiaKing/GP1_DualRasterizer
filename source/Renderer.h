@@ -25,6 +25,14 @@ namespace dae
 		void Update(const Timer* pTimer);
 		void Render() const;
 		void ToggleRenderMode();
+		void ToggleMeshRotation();
+		void ToggleFireMesh();
+		void ToggleSamplerState();
+		void ToggleShadingMode();
+		void ToggleNormalMap();
+		void ToggleShowingDepthBuffer();
+		void ToggleShowingBoundingBoxes();
+		void ToggleUniformBackground();
 
 	private:
 		enum class RenderMode
@@ -41,7 +49,10 @@ namespace dae
 		Camera* m_pCamera{};
 		std::vector<Mesh*> m_pMeshes{};
 		std::vector<Texture*> m_pTextures{};
+
 		RenderMode m_RenderMode{ RenderMode::Hardware };
+		bool m_IsMeshRotating{ true };
+		bool m_IsBackgroundUniform{};
 
 		HardwareRenderer* m_pHardwareRender{};
 		SoftwareRenderer* m_pSoftwareRender{};

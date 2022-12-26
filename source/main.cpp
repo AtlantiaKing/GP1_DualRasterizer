@@ -44,6 +44,7 @@ int main(int argc, char* args[])
 	pTimer->Start();
 	float printTimer = 0.f;
 	bool isLooping = true;
+	bool isShowingFPS{ false };
 	while (isLooping)
 	{
 		//--------- Get input events ---------
@@ -57,6 +58,30 @@ int main(int argc, char* args[])
 				break;
 			case SDL_KEYUP:
 				if (e.key.keysym.scancode == SDL_SCANCODE_F1) pRenderer->ToggleRenderMode();
+				else if (e.key.keysym.scancode == SDL_SCANCODE_F2) pRenderer->ToggleMeshRotation();
+				else if (e.key.keysym.scancode == SDL_SCANCODE_F3) pRenderer->ToggleFireMesh();
+				else if (e.key.keysym.scancode == SDL_SCANCODE_F4) pRenderer->ToggleSamplerState();
+				else if (e.key.keysym.scancode == SDL_SCANCODE_F5) pRenderer->ToggleShadingMode();
+				else if (e.key.keysym.scancode == SDL_SCANCODE_F6) pRenderer->ToggleNormalMap();
+				else if (e.key.keysym.scancode == SDL_SCANCODE_F7) pRenderer->ToggleShowingDepthBuffer();
+				else if (e.key.keysym.scancode == SDL_SCANCODE_F8) pRenderer->ToggleShowingBoundingBoxes();
+				else if (e.key.keysym.scancode == SDL_SCANCODE_F8) pRenderer->ToggleShowingBoundingBoxes();
+				else if (e.key.keysym.scancode == SDL_SCANCODE_F10) pRenderer->ToggleUniformBackground();
+				else if (e.key.keysym.scancode == SDL_SCANCODE_F11)
+				{
+					isShowingFPS = !isShowingFPS;
+
+					std::cout << "\033[33m"; // TEXT COLOR
+					std::cout << "**(SHARED)Print FPS ";
+					if (isShowingFPS)
+					{
+						std::cout << "ON\n";
+					}
+					else
+					{
+						std::cout << "OFF\n";
+					}
+				}
 				break;
 			default: ;
 			}
@@ -74,7 +99,11 @@ int main(int argc, char* args[])
 		if (printTimer >= 1.f)
 		{
 			printTimer = 0.f;
-			std::cout << "dFPS: " << pTimer->GetdFPS() << std::endl;
+			if (isShowingFPS)
+			{
+				std::cout << "\033[90m"; // TEXT COLOR
+				std::cout << "dFPS: " << pTimer->GetdFPS() << std::endl;
+			}
 		}
 	}
 	pTimer->Stop();
