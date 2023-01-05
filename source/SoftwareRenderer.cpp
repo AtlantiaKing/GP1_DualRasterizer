@@ -459,6 +459,11 @@ namespace dae
 		m_pMesh = pMesh;
 	}
 
+	void SoftwareRenderer::SetCullMode(CullMode cullMode)
+	{
+		m_CullMode = cullMode;
+	}
+
 	bool dae::SoftwareRenderer::SaveBufferToImage() const
 	{
 		return SDL_SaveBMP(m_pBackBuffer, "Rasterizer_ColorBuffer.bmp");
@@ -533,7 +538,7 @@ namespace dae
 		const float fullTriangleArea{ Vector2::Cross(edge01, edge12) };
 
 		// If the triangle area is 0 or NaN, continue to the next triangle
-		if (fullTriangleArea < FLT_EPSILON || isnan(fullTriangleArea)) return;
+		if (abs(fullTriangleArea) < FLT_EPSILON || isnan(fullTriangleArea)) return;
 
 		// Calculate the bounding box of this triangle
 		Vector2 minBoundingBox{ Vector2::Min(v0, Vector2::Min(v1, v2)) };
@@ -574,12 +579,18 @@ namespace dae
 				const Vector2 v2ToPoint{ curPixel - v2 };
 
 				// Calculate cross product from edge to start to point
-				const float edge01PointCross{ Vector2::Cross(edge01, v0ToPoint) };
-				const float edge12PointCross{ Vector2::Cross(edge12, v1ToPoint) };
-				const float edge20PointCross{ Vector2::Cross(edge20, v2ToPoint) };
+				float edge01PointCross{ Vector2::Cross(edge01, v0ToPoint) };
+				float edge12PointCross{ Vector2::Cross(edge12, v1ToPoint) };
+				float edge20PointCross{ Vector2::Cross(edge20, v2ToPoint) };
 
-				// Check if pixel is inside triangle, if not continue to the next pixel
-				if (!(edge01PointCross >= 0 && edge12PointCross >= 0 && edge20PointCross >= 0)) continue;
+				// Calculate which side of the triangle has been hit
+				const bool isFrontFaceHit{ edge01PointCross >= 0 && edge12PointCross >= 0 && edge20PointCross >= 0 };
+				const bool isBackFaceHit{ edge01PointCross <= 0 && edge12PointCross <= 0 && edge20PointCross <= 0 };
+
+				// Continue to the next pixel if this pixel does not meet the criteria of the cullmode
+				if ((m_CullMode == CullMode::Back && !isFrontFaceHit) ||
+					(m_CullMode == CullMode::Front && !isBackFaceHit) ||
+					(m_CullMode == CullMode::None && !isBackFaceHit && !isFrontFaceHit)) continue;
 
 				// Calculate the barycentric weights
 				const float weightV0{ edge12PointCross / fullTriangleArea };

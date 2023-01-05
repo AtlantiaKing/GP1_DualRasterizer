@@ -17,6 +17,10 @@ namespace dae
 		// Save the samplestate variable of the effect as a member variable
 		m_pSamplerStateVariable = m_pEffect->GetVariableByName("gSamState")->AsSampler();
 		if (!m_pSamplerStateVariable->IsValid()) std::wcout << L"m_pSamplerStateVariable not valid\n";
+
+		// Save the rasterizerstate variable of the effect as a member variable
+		m_pRasterizerStateVariable = m_pEffect->GetVariableByName("gRasterizerState")->AsRasterizer();
+		if (!m_pRasterizerStateVariable->IsValid()) std::wcout << L"m_pRasterizerStateVariable not valid\n";
 	}
 
 	Material::~Material()
@@ -96,6 +100,12 @@ namespace dae
 	{
 		HRESULT hr{ m_pSamplerStateVariable->SetSampler(0, pSampleState) };
 		if (FAILED(hr)) std::wcout << L"Failed to change sample state";
+	}
+
+	void Material::SetRasterizerState(ID3D11RasterizerState* pRasterizerState)
+	{
+		HRESULT hr{ m_pRasterizerStateVariable->SetRasterizerState(0, pRasterizerState) };
+		if (FAILED(hr)) std::wcout << L"Failed to change rasterizer state";
 	}
 
 	ID3DX11Effect* Material::LoadEffect(ID3D11Device* pDevice, const std::wstring& assetFile) const

@@ -66,6 +66,7 @@ int main(int argc, char* args[])
 				else if (e.key.keysym.scancode == SDL_SCANCODE_F7) pRenderer->ToggleShowingDepthBuffer();
 				else if (e.key.keysym.scancode == SDL_SCANCODE_F8) pRenderer->ToggleShowingBoundingBoxes();
 				else if (e.key.keysym.scancode == SDL_SCANCODE_F8) pRenderer->ToggleShowingBoundingBoxes();
+				else if (e.key.keysym.scancode == SDL_SCANCODE_F9) pRenderer->ToggleCullMode();
 				else if (e.key.keysym.scancode == SDL_SCANCODE_F10) pRenderer->ToggleUniformBackground();
 				else if (e.key.keysym.scancode == SDL_SCANCODE_F11)
 				{

@@ -28,4 +28,11 @@ namespace dae
 		TriangleList,
 		TriangleStrip
 	};
+
+	enum class CullMode
+	{
+		Back,
+		Front,
+		None
+	};
 }

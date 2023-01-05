@@ -1,5 +1,7 @@
 #pragma once
 
+#include "DataTypes.h"
+
 struct SDL_Window;
 struct SDL_Surface;
 
@@ -14,6 +16,7 @@ namespace dae
 	class Renderer final
 	{
 	public:
+
 		Renderer(SDL_Window* pWindow);
 		~Renderer();
 
@@ -33,6 +36,7 @@ namespace dae
 		void ToggleShowingDepthBuffer();
 		void ToggleShowingBoundingBoxes();
 		void ToggleUniformBackground();
+		void ToggleCullMode();
 
 	private:
 		enum class RenderMode
@@ -51,6 +55,7 @@ namespace dae
 		std::vector<Texture*> m_pTextures{};
 
 		RenderMode m_RenderMode{ RenderMode::Hardware };
+		CullMode m_CullMode{ CullMode::Back };
 		bool m_IsMeshRotating{ true };
 		bool m_IsBackgroundUniform{};
 

@@ -106,6 +106,51 @@ namespace dae {
 		LoadSampleState(newFilter, pMeshes);
 	}
 
+	void HardwareRenderer::SetCullMode(CullMode cullMode, const std::vector<Mesh*>& pMeshes)
+	{
+		// Create the RasterizerState description
+		D3D11_RASTERIZER_DESC rasterizerDesc{};
+		rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+		rasterizerDesc.FrontCounterClockwise = false;
+		rasterizerDesc.DepthBias = 0;
+		rasterizerDesc.SlopeScaledDepthBias = 0.0f;
+		rasterizerDesc.DepthBiasClamp = 0.0f;
+		rasterizerDesc.DepthClipEnable = true;
+		rasterizerDesc.ScissorEnable = false;
+		rasterizerDesc.MultisampleEnable = false;
+		rasterizerDesc.AntialiasedLineEnable = false;
+
+		// Set the right cull mode
+		switch (cullMode)
+		{
+		case CullMode::Back:
+		{
+			rasterizerDesc.CullMode = D3D11_CULL_BACK;
+			break;
+		}
+		case CullMode::Front:
+		{
+			rasterizerDesc.CullMode = D3D11_CULL_FRONT;
+			break;
+		}
+		case CullMode::None:
+		{
+			rasterizerDesc.CullMode = D3D11_CULL_NONE;
+			break;
+		}
+		}
+
+		// Release the current rasterizer state if one exists
+		if (m_pRasterizerState) m_pRasterizerState->Release();
+
+		// Create a new rasterizer state
+		HRESULT hr{ m_pDevice->CreateRasterizerState(&rasterizerDesc, &m_pRasterizerState) };
+		if (FAILED(hr)) std::wcout << L"m_pRasterizerState failed to load\n";
+
+		// Apply the rasterizer state
+		pMeshes[0]->SetRasterizerState(m_pRasterizerState);
+	}
+
 	HRESULT HardwareRenderer::InitializeDirectX()
 	{
 		// Create Device and DeviceContext

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "DataTypes.h"
+
 struct SDL_Window;
 
 namespace dae
@@ -18,6 +20,7 @@ namespace dae
 		HardwareRenderer& operator=(HardwareRenderer&&) noexcept = delete;
 
 		void ToggleRenderSampleState(const std::vector<Mesh*>& pMeshes);
+		void SetCullMode(CullMode cullMode, const std::vector<Mesh*>& pMeshes);
 
 		ID3D11Device* GetDevice() const;
 		ID3D11SamplerState* GetSampleState() const;
@@ -42,6 +45,7 @@ namespace dae
 		SampleState m_SampleState{ SampleState::Point };
 		bool m_IsRotatingMesh{ true };
 
+		ID3D11RasterizerState* m_pRasterizerState{};
 		ID3D11SamplerState* m_pSampleState{};
 		ID3D11Device* m_pDevice{};
 		ID3D11DeviceContext* m_pDeviceContext{};

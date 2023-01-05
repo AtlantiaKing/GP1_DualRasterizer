@@ -24,6 +24,7 @@ namespace dae
 		// DirectX Rasterizer
 		void SetMatrices(const Matrix& viewProjectionMatrix, const Matrix& inverseViewMatrix);
 		void SetSamplerState(ID3D11SamplerState* pSampleState);
+		void SetRasterizerState(ID3D11RasterizerState* pRasterizerState);
 		void SetVisibility(bool isVisible);
 		void HardwareRender(ID3D11DeviceContext* pDeviceContext) const;
 		bool IsVisible() const;

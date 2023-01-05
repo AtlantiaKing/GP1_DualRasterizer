@@ -134,6 +134,11 @@ namespace dae
 		m_pMaterial->SetSampleState(pSampleState);
 	}
 
+	void Mesh::SetRasterizerState(ID3D11RasterizerState* pRasterizerState)
+	{
+		m_pMaterial->SetRasterizerState(pRasterizerState);
+	}
+
 	void Mesh::SetVisibility(bool isVisible)
 	{
 		m_IsVisible = isVisible;

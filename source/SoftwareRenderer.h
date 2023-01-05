@@ -14,7 +14,6 @@ namespace dae
 	class SoftwareRenderer
 	{
 	public:
-
 		SoftwareRenderer(SDL_Window* pWindow);
 		~SoftwareRenderer();
 
@@ -30,6 +29,7 @@ namespace dae
 		void ToggleNormalMap();
 		void SetTextures(Texture* pDiffuseTexture, Texture* pNormalTexture, Texture* pSpecularTexture, Texture* pGlossinessTexture);
 		void SetMesh(Mesh* pMesh);
+		void SetCullMode(CullMode cullMode);
 
 		bool SaveBufferToImage() const;
 
@@ -62,6 +62,7 @@ namespace dae
 		bool m_IsShowingDepthBuffer{};
 		bool m_IsShowingBoundingBoxes{};
 		LightingMode m_LightingMode{ LightingMode::Combined };
+		CullMode m_CullMode{ CullMode::Back };
 		bool m_IsRotatingMesh{ true };
 		bool m_IsNormalMapActive{ true };
 

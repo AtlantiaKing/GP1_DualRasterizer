@@ -207,6 +207,30 @@ namespace dae {
 		}
 	}
 
+	void Renderer::ToggleCullMode()
+	{
+		// Go to the next cull mode
+		m_CullMode = static_cast<CullMode>((static_cast<int>(m_CullMode) + 1) % (static_cast<int>(CullMode::None) + 1));
+
+		std::cout << "\033[33m"; // TEXT COLOR
+		std::cout << "**(SHARED) CullMode = ";
+		switch (m_CullMode)
+		{
+		case dae::CullMode::Back:
+			std::cout << "BACK\n";
+			break;
+		case dae::CullMode::Front:
+			std::cout << "FRONT\n";
+			break;
+		case dae::CullMode::None:
+			std::cout << "NONE\n";
+			break;
+		}
+
+		m_pSoftwareRender->SetCullMode(m_CullMode);
+		m_pHardwareRender->SetCullMode(m_CullMode, m_pMeshes);
+	}
+
 	void Renderer::LoadMeshes()
 	{
 		// Retrieve the DirectX device from the hardware renderer
