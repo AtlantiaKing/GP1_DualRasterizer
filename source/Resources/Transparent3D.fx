@@ -15,7 +15,6 @@ SamplerState gSamState : SampleState
 RasterizerState gRasterizerState
 {
 	CullMode = none;
-	FrontCounterClockwise = false; // default
 };
 
 BlendState gBlendState

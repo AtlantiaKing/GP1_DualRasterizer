@@ -17,7 +17,7 @@ namespace dae
 		HardwareRenderer& operator=(const HardwareRenderer&) = delete;
 		HardwareRenderer& operator=(HardwareRenderer&&) noexcept = delete;
 
-		void ToggleRenderSampleState(std::vector<Mesh*>& pMeshes);
+		void ToggleRenderSampleState(const std::vector<Mesh*>& pMeshes);
 
 		ID3D11Device* GetDevice() const;
 		ID3D11SamplerState* GetSampleState() const;
@@ -52,6 +52,6 @@ namespace dae
 		ID3D11RenderTargetView* m_pRenderTargetView{};
 
 		HRESULT InitializeDirectX();
-		void LoadSampleState(D3D11_FILTER filter, std::vector<Mesh*>& pMeshes);
+		void LoadSampleState(D3D11_FILTER filter, const std::vector<Mesh*>& pMeshes);
 	};
 }

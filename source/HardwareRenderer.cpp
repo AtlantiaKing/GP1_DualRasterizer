@@ -77,7 +77,7 @@ namespace dae {
 		m_pSwapChain->Present(0, 0);
 	}
 
-	void HardwareRenderer::ToggleRenderSampleState(std::vector<Mesh*>& pMeshes)
+	void HardwareRenderer::ToggleRenderSampleState(const std::vector<Mesh*>& pMeshes)
 	{
 		// Go to the next sample state
 		m_SampleState = static_cast<SampleState>((static_cast<int>(m_SampleState) + 1) % (static_cast<int>(SampleState::Anisotropic) + 1));
@@ -211,7 +211,7 @@ namespace dae {
 		return S_OK;
 	}
 
-	void HardwareRenderer::LoadSampleState(D3D11_FILTER filter, std::vector<Mesh*>& pMeshes)
+	void HardwareRenderer::LoadSampleState(D3D11_FILTER filter, const std::vector<Mesh*>& pMeshes)
 	{
 		// Create the SampleState description
 		D3D11_SAMPLER_DESC sampleDesc{};
@@ -219,10 +219,10 @@ namespace dae {
 		sampleDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 		sampleDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
 		sampleDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-		sampleDesc.MipLODBias = 0;
-		sampleDesc.MinLOD = 0;
+		sampleDesc.MipLODBias = 0.0f;
+		sampleDesc.MinLOD = -D3D11_FLOAT32_MAX;
 		sampleDesc.MaxLOD = D3D11_FLOAT32_MAX;
-		sampleDesc.MaxAnisotropy = 16;
+		sampleDesc.MaxAnisotropy = 1;
 		sampleDesc.Filter = filter;
 
 		// Release the current sample state if one exists
