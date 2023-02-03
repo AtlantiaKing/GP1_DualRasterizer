@@ -25,16 +25,16 @@ namespace dae
 		Renderer& operator=(const Renderer&) = delete;
 		Renderer& operator=(Renderer&&) noexcept = delete;
 
-		void Update(const Timer* pTimer);
+		void Update(const Timer* pTimer) const;
 		void Render() const;
 		void ToggleRenderMode();
 		void ToggleMeshRotation();
-		void ToggleFireMesh();
-		void ToggleSamplerState();
-		void ToggleShadingMode();
-		void ToggleNormalMap();
-		void ToggleShowingDepthBuffer();
-		void ToggleShowingBoundingBoxes();
+		void ToggleFireMesh() const;
+		void ToggleSamplerState() const;
+		void ToggleShadingMode() const;
+		void ToggleNormalMap() const;
+		void ToggleShowingDepthBuffer() const;
+		void ToggleShowingBoundingBoxes() const;
 		void ToggleUniformBackground();
 		void ToggleCullMode();
 
@@ -44,8 +44,6 @@ namespace dae
 			Software,
 			Hardware
 		};
-
-		SDL_Window* m_pWindow{};
 
 		int m_Width{};
 		int m_Height{};

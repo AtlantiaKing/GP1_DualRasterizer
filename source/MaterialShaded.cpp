@@ -30,6 +30,9 @@ namespace dae
 		// Save the inverseviewmatrix variable of the effect as a member variable
 		m_pMatInverseViewVariable = m_pEffect->GetVariableByName("gViewInverse")->AsMatrix();
 		if (!m_pMatInverseViewVariable->IsValid()) std::wcout << L"m_pMatInverseViewVariable not valid\n";
+
+		// Set the cullmode on back face culling
+		m_CullMode = CullMode::Back;
 	}
 
 	void MaterialShaded::SetMatrix(MatrixType type, const Matrix& matrix)

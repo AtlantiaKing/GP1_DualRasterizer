@@ -22,7 +22,7 @@ namespace dae {
 		}
 
 		// Load the initial sample state
-		std::vector<Mesh*> tempMeshes{};
+		const std::vector<Mesh*> tempMeshes{};
 		LoadSampleState(D3D11_FILTER_MIN_MAG_MIP_POINT, tempMeshes);
 	}
 
@@ -63,7 +63,7 @@ namespace dae {
 			return;
 
 		// Clear RTV and DSV
-		ColorRGB clearColor{ useUniformBackground ? ColorRGB{ 0.1f, 0.1f, 0.1f } : ColorRGB{ 0.39f, 0.59f, 0.93f } };
+		const ColorRGB clearColor{ useUniformBackground ? ColorRGB{ 0.1f, 0.1f, 0.1f } : ColorRGB{ 0.39f, 0.59f, 0.93f } };
 		m_pDeviceContext->ClearRenderTargetView(m_pRenderTargetView, &clearColor.r);
 		m_pDeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
@@ -106,7 +106,7 @@ namespace dae {
 		LoadSampleState(newFilter, pMeshes);
 	}
 
-	void HardwareRenderer::SetCullMode(CullMode cullMode, const std::vector<Mesh*>& pMeshes)
+	void HardwareRenderer::SetRasterizerState(CullMode cullMode, const std::vector<Mesh*>& pMeshes)
 	{
 		// Create the RasterizerState description
 		D3D11_RASTERIZER_DESC rasterizerDesc{};
@@ -144,7 +144,7 @@ namespace dae {
 		if (m_pRasterizerState) m_pRasterizerState->Release();
 
 		// Create a new rasterizer state
-		HRESULT hr{ m_pDevice->CreateRasterizerState(&rasterizerDesc, &m_pRasterizerState) };
+		const HRESULT hr{ m_pDevice->CreateRasterizerState(&rasterizerDesc, &m_pRasterizerState) };
 		if (FAILED(hr)) std::wcout << L"m_pRasterizerState failed to load\n";
 
 		// Apply the rasterizer state
@@ -274,7 +274,7 @@ namespace dae {
 		if (m_pSampleState) m_pSampleState->Release();
 
 		// Create a new sample state
-		HRESULT hr{ m_pDevice->CreateSamplerState(&sampleDesc, &m_pSampleState) };
+		const HRESULT hr{ m_pDevice->CreateSamplerState(&sampleDesc, &m_pSampleState) };
 		if (FAILED(hr)) std::wcout << L"m_pSampleState failed to load\n";
 
 		// Update the sample state in all the meshes

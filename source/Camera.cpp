@@ -57,12 +57,9 @@ namespace dae
 		const uint32_t mouseState = SDL_GetRelativeMouseState(&mouseX, &mouseY);
 
 		// Speed and limit constants
-		const float keyboardMovementSpeed{ 10.0f };
-		const float fovChangeSpeed{ 50.0f };
-		const float minFov{ 30.0f };
-		const float maxFov{ 170.0f };
-		const float mouseMovementSpeed{ 2.0f };
-		const float angularSpeed{ 360 * TO_RADIANS };
+		constexpr float keyboardMovementSpeed{ 30.0f };
+		constexpr float mouseMovementSpeed{ 0.1f };
+		constexpr float angularSpeed{ 0.3f * TO_RADIANS };
 
 		// The total movement of this frame
 		Vector3 direction{};
@@ -72,33 +69,39 @@ namespace dae
 		direction -= pKeyboardState[SDL_SCANCODE_S] * m_Forward * keyboardMovementSpeed * deltaTime;
 		direction -= (pKeyboardState[SDL_SCANCODE_Q] || pKeyboardState[SDL_SCANCODE_A]) * m_Right * keyboardMovementSpeed * deltaTime;
 		direction += pKeyboardState[SDL_SCANCODE_D] * m_Right * keyboardMovementSpeed * deltaTime;
-
+		
 		// Calculate new position and rotation with mouse inputs
 		switch (mouseState)
 		{
 		case SDL_BUTTON_LMASK: // LEFT CLICK
-			direction -= m_Forward * (mouseY * mouseMovementSpeed * deltaTime);
-			m_TotalYaw += mouseX * angularSpeed * deltaTime;
+		{
+			m_TotalYaw += mouseX * angularSpeed;
+			direction -= mouseY * mouseMovementSpeed * m_Forward;
 			break;
+		}
 		case SDL_BUTTON_RMASK: // RIGHT CLICK
-			m_TotalYaw += mouseX * angularSpeed * deltaTime;
-			m_TotalPitch -= mouseY * angularSpeed * deltaTime;
+		{
+			m_TotalYaw += mouseX * angularSpeed;
+			m_TotalPitch -= mouseY * angularSpeed;
 			break;
+		}
 		case SDL_BUTTON_X2: // BOTH CLICK
-			direction.y -= mouseY * mouseMovementSpeed * deltaTime;
+		{
+			direction.y -= mouseY * mouseMovementSpeed;
 			break;
+		}
 		}
 		m_TotalPitch = std::clamp(m_TotalPitch, -89.0f * TO_RADIANS, 89.0f * TO_RADIANS);
 
 		// Speed up all movement when the shift button is pressed
-		const float speedUpFactor{ 4.0f };
+		constexpr float speedUpFactor{ 4.0f };
 		direction *= 1.0f + pKeyboardState[SDL_SCANCODE_LSHIFT] * (speedUpFactor - 1.0f);
 
 		// Apply the direction to the current position
 		m_Origin += direction;
 
 		// Calculate the rotation matrix with the new pitch and yaw
-		Matrix rotationMatrix = Matrix::CreateRotationX(m_TotalPitch) * Matrix::CreateRotationY(m_TotalYaw);
+		const Matrix rotationMatrix = Matrix::CreateRotationX(m_TotalPitch) * Matrix::CreateRotationY(m_TotalYaw);
 
 		// Calculate the new forward vector with the new pitch and yaw
 		m_Forward = rotationMatrix.TransformVector(Vector3::UnitZ);

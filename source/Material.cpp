@@ -51,7 +51,7 @@ namespace dae
 		return m_pTechnique;
 	}
 
-	ID3D11InputLayout* Material::LoadInputLayout(ID3D11Device* pDevice)
+	ID3D11InputLayout* Material::LoadInputLayout(ID3D11Device* pDevice) const
 	{
 		// Create vertex layout
 		static constexpr uint32_t numElements{ 4 };
@@ -83,7 +83,7 @@ namespace dae
 
 		ID3D11InputLayout* pInputLayout;
 
-		HRESULT result{ pDevice->CreateInputLayout
+		const HRESULT result{ pDevice->CreateInputLayout
 			(
 				vertexDesc,
 				numElements,
@@ -96,19 +96,19 @@ namespace dae
 		return pInputLayout;
 	}
 
-	void Material::SetSampleState(ID3D11SamplerState* pSampleState)
+	void Material::SetSampleState(ID3D11SamplerState* pSampleState) const
 	{
-		HRESULT hr{ m_pSamplerStateVariable->SetSampler(0, pSampleState) };
+		const HRESULT hr{ m_pSamplerStateVariable->SetSampler(0, pSampleState) };
 		if (FAILED(hr)) std::wcout << L"Failed to change sample state";
 	}
 
-	void Material::SetRasterizerState(ID3D11RasterizerState* pRasterizerState)
+	void Material::SetRasterizerState(ID3D11RasterizerState* pRasterizerState) const
 	{
-		HRESULT hr{ m_pRasterizerStateVariable->SetRasterizerState(0, pRasterizerState) };
+		const HRESULT hr{ m_pRasterizerStateVariable->SetRasterizerState(0, pRasterizerState) };
 		if (FAILED(hr)) std::wcout << L"Failed to change rasterizer state";
 	}
 
-	ID3DX11Effect* Material::LoadEffect(ID3D11Device* pDevice, const std::wstring& assetFile) const
+	ID3DX11Effect* Material::LoadEffect(ID3D11Device* pDevice, const std::wstring& assetFile)
 	{
 		HRESULT result;
 		ID3D10Blob* pErrorBlob{ nullptr };

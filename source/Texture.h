@@ -18,11 +18,16 @@ namespace dae
 
 		~Texture();
 
+		Texture(const Texture& other) = delete;
+		Texture& operator=(const Texture& other) = delete;
+		Texture(Texture&& other) = delete;
+		Texture& operator=(Texture&& other) = delete;
+		
 		// Shared
 		static Texture* LoadFromFile(ID3D11Device* pDevice, const std::string& path, TextureType type);
 
 		// Software Rasterizer
-		ColorRGB Sample(const Vector2& uv) const;
+		ColorRGB SampleRGB(const Vector2& uv) const;
 
 		// Hardware Rasterizer
 		ID3D11Texture2D* GetResource() const;

@@ -12,7 +12,7 @@ namespace dae
 		, m_Type{ type }
 	{
 		// Create the texture description
-		const DXGI_FORMAT format{ DXGI_FORMAT_R8G8B8A8_UNORM };
+		constexpr DXGI_FORMAT format{ DXGI_FORMAT_R8G8B8A8_UNORM };
 		D3D11_TEXTURE2D_DESC desc{};
 		desc.Width = pSurface->w;
 		desc.Height = pSurface->h;
@@ -62,12 +62,13 @@ namespace dae
 		return new Texture{ pDevice, IMG_Load(path.c_str()), type };
 	}
 
-	ColorRGB Texture::Sample(const Vector2& uv) const
+	ColorRGB Texture::SampleRGB(const Vector2& uv) const
 	{
 		// The rgb values in [0, 255] range
 		Uint8 r{};
 		Uint8 g{};
 		Uint8 b{};
+		Uint8 a{};
 
 		// Calculate the UV coordinates using clamp adressing mode
 		const int x{ static_cast<int>(std::clamp(uv.x, 0.0f, 1.0f) * m_pSurface->w) };
@@ -77,13 +78,13 @@ namespace dae
 		const Uint32 pixelIdx{ m_pSurfacePixels[x + y * m_pSurface->w] };
 
 		// Get the r g b values from the current pixel on the texture
-		SDL_GetRGB(pixelIdx, m_pSurface->format, &r, &g, &b);
+		SDL_GetRGBA(pixelIdx, m_pSurface->format, &r, &g, &b, &a);
 
 		// The max value of a color attribute
-		const float maxColorValue{ 255.0f };
+		constexpr float maxColorValue{ 255.0f };
 
 		// Return the color in range [0, 1]
-		return ColorRGB{ r / maxColorValue, g / maxColorValue, b / maxColorValue };
+		return ColorRGB{ r / maxColorValue, g / maxColorValue, b / maxColorValue, a / maxColorValue };
 	}
 
 	ID3D11Texture2D* Texture::GetResource() const

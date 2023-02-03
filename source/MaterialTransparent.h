@@ -9,8 +9,14 @@ namespace dae
 	{
 	public:
 		MaterialTransparent(ID3D11Device* pDevice, const std::wstring& assetFile);
+		virtual ~MaterialTransparent() = default;
 
-		void SetTexture(Texture* pTexture);
+		MaterialTransparent(const MaterialTransparent&) = delete;
+		MaterialTransparent(MaterialTransparent&&) = delete;
+		MaterialTransparent& operator=(const MaterialTransparent&) = delete;
+		MaterialTransparent& operator=(MaterialTransparent&&) = delete;
+
+		virtual void SetTexture(Texture* pTexture) override;
 	private:
 		ID3DX11EffectShaderResourceVariable* m_pDiffuseMapVariable{};
 	};

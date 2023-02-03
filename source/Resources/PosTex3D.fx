@@ -6,6 +6,7 @@ float gLightIntensity = 7.0f;
 float gShininess = 25.0f;
 
 float3 gLightDirection = normalize(float3(0.577f, -0.577f, 0.577f));
+float4 gAmbientColor = float4(0.025f, 0.025f, 0.025f, 1.0f);
 
 float4x4 gWorldViewProj : WorldViewProjection;
 float4x4 gWorld : World;
@@ -79,16 +80,16 @@ VS_OUTPUT VS(VS_INPUT input)
 //------------------------------------------------
 // BRDF Calculation
 //------------------------------------------------
-float4 CalculateLambert(float kd, float4 cd)
+float4 CalculateLambert(float4 cd)
 {
-	return cd * kd / gPI;
+	return cd / gPI;
 }
 
-float CalculatePhong(float ks, float exp, float3 l, float3 v, float3 n)
+float CalculatePhong(float exp, float3 l, float3 v, float3 n)
 {
 	float3 reflectedLightVector = reflect(l,n);
 	float reflectedViewDot = saturate(dot(reflectedLightVector, v));
-	float phong = ks * pow(reflectedViewDot, exp);
+	float phong = pow(reflectedViewDot, exp);
 
 	return phong;
 }
@@ -101,18 +102,18 @@ float4 PS(VS_OUTPUT input) : SV_TARGET
 	float3 binormal = cross(input.Normal, input.Tangent);
 	float4x4 tangentSpaceAxis = float4x4(float4(input.Tangent, 0.0f), float4(binormal, 0.0f), float4(input.Normal, 0.0), float4(0.0f, 0.0f, 0.0f, 1.0f));
 	float3 currentNormalMap = 2.0f * gNormalMap.Sample(gSamState, input.UV).rgb - float3(1.0f, 1.0f, 1.0f);
-	float3 normal = mul(float4(currentNormalMap, 0.0f), tangentSpaceAxis);
+	float3 normal = normalize(mul(float4(currentNormalMap, 0.0f), tangentSpaceAxis).xyz);
 
 	float3 viewDirection = normalize(input.WorldPosition.xyz - gViewInverse[3].xyz);
 
 	float observedArea = saturate(dot(normal, -gLightDirection));
 
-	float4 lambert = CalculateLambert(1.0f, gDiffuseMap.Sample(gSamState, input.UV));
+	float4 lambert = CalculateLambert(gDiffuseMap.Sample(gSamState, input.UV));
 
 	float specularExp = gShininess * gGlossinessMap.Sample(gSamState, input.UV).r;
-	float4 specular = gSpecularMap.Sample(gSamState, input.UV) * CalculatePhong(1.0f, specularExp, -gLightDirection, viewDirection, input.Normal);
+	float4 specular = gSpecularMap.Sample(gSamState, input.UV) * CalculatePhong(specularExp, gLightDirection, -viewDirection, normal);
 
-	return (gLightIntensity * lambert + specular) * observedArea;
+	return (gLightIntensity * lambert) * observedArea + specular + gAmbientColor;
 }
 
 //------------------------------------------------

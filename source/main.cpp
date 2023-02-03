@@ -6,8 +6,20 @@
 
 #undef main
 #include "Renderer.h"
+#include <Windows.h>
 
 using namespace dae;
+
+// Ensure that color codes work on every machine
+void EnableColors()
+{
+	DWORD consoleMode;
+	const HANDLE outputHandle{ GetStdHandle(STD_OUTPUT_HANDLE) };
+	if (GetConsoleMode(outputHandle, &consoleMode))
+	{
+		SetConsoleMode(outputHandle, consoleMode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
+	}
+}
 
 void ShutDown(SDL_Window* pWindow)
 {
@@ -21,6 +33,8 @@ int main(int argc, char* args[])
 	(void)argc;
 	(void)args;
 
+	EnableColors();
+
 	//Create window + surfaces
 	SDL_Init(SDL_INIT_VIDEO);
 
@@ -28,7 +42,7 @@ int main(int argc, char* args[])
 	const uint32_t height = 480;
 
 	SDL_Window* pWindow = SDL_CreateWindow(
-		"DirectX - ***Insert Name/Class***",
+		"Dual Rasterizer - De Keukelaere Sander (2DAE15N)",
 		SDL_WINDOWPOS_UNDEFINED,
 		SDL_WINDOWPOS_UNDEFINED,
 		width, height, 0);
@@ -64,7 +78,6 @@ int main(int argc, char* args[])
 				else if (e.key.keysym.scancode == SDL_SCANCODE_F5) pRenderer->ToggleShadingMode();
 				else if (e.key.keysym.scancode == SDL_SCANCODE_F6) pRenderer->ToggleNormalMap();
 				else if (e.key.keysym.scancode == SDL_SCANCODE_F7) pRenderer->ToggleShowingDepthBuffer();
-				else if (e.key.keysym.scancode == SDL_SCANCODE_F8) pRenderer->ToggleShowingBoundingBoxes();
 				else if (e.key.keysym.scancode == SDL_SCANCODE_F8) pRenderer->ToggleShowingBoundingBoxes();
 				else if (e.key.keysym.scancode == SDL_SCANCODE_F9) pRenderer->ToggleCullMode();
 				else if (e.key.keysym.scancode == SDL_SCANCODE_F10) pRenderer->ToggleUniformBackground();

@@ -9,9 +9,15 @@ namespace dae
 	{
 	public:
 		MaterialShaded(ID3D11Device* pDevice, const std::wstring& assetFile);
+		virtual ~MaterialShaded() = default;
+
+		MaterialShaded(const MaterialShaded&) = delete;
+		MaterialShaded(MaterialShaded&&) = delete;
+		MaterialShaded& operator=(const MaterialShaded&) = delete;
+		MaterialShaded& operator=(MaterialShaded&&) = delete;
 
 		virtual void SetMatrix(MatrixType type, const Matrix& matrix) override;
-		void SetTexture(Texture* pTexture);
+		virtual void SetTexture(Texture* pTexture) override;
 	private:
 		ID3DX11EffectShaderResourceVariable* m_pDiffuseMapVariable{};
 		ID3DX11EffectShaderResourceVariable* m_pNormalMapVariable{};

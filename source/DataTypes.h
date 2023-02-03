@@ -3,6 +3,27 @@
 
 namespace dae
 {
+	enum class LightingMode
+	{
+		Combined,
+		ObservedArea,
+		Diffuse,
+		Specular
+	};
+
+	enum class PrimitiveTopology
+	{
+		TriangleList,
+		TriangleStrip
+	};
+
+	enum class CullMode
+	{
+		Back,
+		Front,
+		None
+	};
+
 	struct Vertex
 	{
 		Vector3 position{};
@@ -23,16 +44,22 @@ namespace dae
 		Vector3 viewDirection{};
 	};
 
-	enum class PrimitiveTopology
+	struct SoftwareRenderInfo
 	{
-		TriangleList,
-		TriangleStrip
-	};
+		~SoftwareRenderInfo()
+		{
+			delete[] pDepthBuffer;
+		}
 
-	enum class CullMode
-	{
-		Back,
-		Front,
-		None
+		int width{};
+		int height{};
+		bool isShowingBoundingBoxes{};
+		bool isShowingDepthBuffer{};
+		uint32_t* pBackBufferPixels{};
+		float* pDepthBuffer{}; 
+		SDL_Surface* pFrontBuffer{};
+		SDL_Surface* pBackBuffer{};
+		bool isNormalMapActive{ true };
+		LightingMode lightingMode{ LightingMode::Combined };
 	};
 }

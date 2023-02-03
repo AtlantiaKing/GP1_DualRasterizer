@@ -1,9 +1,4 @@
 #pragma once
-#include <cassert>
-#include <SDL_keyboard.h>
-#include <SDL_mouse.h>
-#include <algorithm>
-
 #include "Math.h"
 #include "Timer.h"
 
@@ -20,9 +15,11 @@ namespace dae
 		void Update(const Timer* pTimer);
 		void ChangeFOV(float newFov);
 
-		Matrix& GetViewMatrix() { return m_ViewMatrix; };
-		Matrix& GetInverseViewMatrix() { return m_InvViewMatrix; };
-		Matrix& GetProjectionMatrix() { return m_ProjectionMatrix; };
+		const Matrix& GetViewMatrix() const { return m_ViewMatrix; }
+		const Matrix& GetInverseViewMatrix() const { return m_InvViewMatrix; }
+		const Matrix& GetProjectionMatrix() const { return m_ProjectionMatrix; }
+
+		Vector3 GetPosition() const { return m_Origin; }
 	private:
 		Vector3 m_Origin{};
 		float m_FovAngle{90.f};

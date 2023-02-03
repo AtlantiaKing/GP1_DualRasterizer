@@ -10,6 +10,9 @@ namespace dae
 		// Save the diffuse texture variable of the effect as a member variable
 		m_pDiffuseMapVariable = m_pEffect->GetVariableByName("gDiffuseMap")->AsShaderResource();
 		if (!m_pDiffuseMapVariable->IsValid()) std::wcout << L"m_pDiffuseMapVariable not valid\n";
+
+		// Set the cullmode on front face culling
+		m_CullMode = CullMode::Front;
 	}
 
 	void MaterialTransparent::SetTexture(Texture* pTexture)
